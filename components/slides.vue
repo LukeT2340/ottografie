@@ -46,7 +46,7 @@ onMounted(() => {
       <img
         src="/assets/images/background-5-86ad29d1.jpg"
         :ref="el => slideEls[0] = el as HTMLElement"
-        class="w-screen h-screen scale-125"
+        class="w-screen h-screen scale-125 object-center"
         style="
           clip-path: polygon(54% 77%, 54% 77%, 54% 100%, 54% 100%);
           transform: translateY(40%);
@@ -61,7 +61,7 @@ onMounted(() => {
       <img
         src="/assets/images/background-4-7e0501e3.jpg"
         :ref="el => slideEls[1] = el as HTMLElement"
-        class="w-screen h-screen scale-125"
+        class="w-screen h-screen scale-125 object-center"
         style="
           clip-path: polygon(54% 77%, 54% 77%, 54% 100%, 54% 100%);
           transform: translateY(40%);
@@ -76,7 +76,7 @@ onMounted(() => {
       <img
         src="/assets/images/background-8370ffe4.jpg"
         :ref="el => slideEls[2] = el as HTMLElement"
-        class="w-screen h-screen scale-125"
+        class="w-screen h-screen scale-125 object-center"
         style="
           clip-path: polygon(54% 77%, 54% 77%, 54% 100%, 54% 100%);
           transform: translateY(40%);
