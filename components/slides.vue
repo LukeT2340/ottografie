@@ -87,10 +87,11 @@ onMounted(() => {
     <!-- Rest of scrollable page here -->
     <div
       :ref="el => slideEls[3] = el as HTMLElement"
-      class="absolute inset-0 w-screen h-screen object-cover bg-black"
+      class="absolute inset-0 w-screen h-screen scale-125 object-cover bg-black"
       style="
         clip-path: polygon(54% 77%, 54% 77%, 54% 100%, 54% 100%);
         overflow-y: hidden;
+        transform: translateY(40%);
       "
     >
       <scrollable />

@@ -9,8 +9,8 @@ const numberEls: Ref<HTMLElement[]> = ref([])
 const headingEls: Ref<HTMLElement[]> = ref([])
 const labelsEls: Ref<HTMLElement[]> = ref([])
 const hasAnimated = ref(false)
-const isLoaded = ref(false) // State to track when animation is complete
-const timer = ref<NodeJS.Timer | null>(null) // Define the timer as a ref
+const isLoaded = ref(false)
+const timer = ref<NodeJS.Timer | null>(null)
 
 gsap.to(labelsEls.value, {
   onStart: () => {
@@ -76,79 +76,83 @@ const incrementDigits = async () => {
         }
       )
     } else {
+      // Final Animations
       hasAnimated.value = true
-
-      // Animate number to 99 and then the heading letters
-      await new Promise<void>((resolve) => {
-        gsap.fromTo(
-          numberEls.value,
-          { y: 190 },
-          {
-            y: 0,
-            duration: 0.5,
-            ease: "power2.out",
-            stagger: 0.1,
-            onComplete: resolve,
-          }
-        )
-      })
-
-      gsap.to(labelsEls.value, {
-        y: -30,
-        duration: 0.5,
-        ease: "power2.in",
-        stagger: 0.1,
-        delay: 0,
-      })
-
-      await new Promise<void>((resolve) => {
-        gsap.to(numberEls.value, {
-          y: -190,
-          duration: 0.5,
-          ease: "power2.in",
-          stagger: 0.1,
-          onComplete: resolve,
-          delay: 0,
-        })
-      })
-
-      gsap.fromTo(
-        headingEls.value,
-        { y: 80, opacity: 0 },
-        {
-          y: "0",
-          opacity: 1,
-          duration: 0.5,
-          delay: 0.4,
-          ease: "power2.out",
-          stagger: 0.03,
-          onComplete: () => {
-            isLoaded.value = true
-          },
-        }
-      )
-
-      gsap.fromTo(
-        headingEls.value,
-        { y: 0 },
-        {
-          y: "-70vh",
-          duration: 1,
-          ease: "power1.in",
-          stagger: 0,
-          delay: 1.3,
-        }
-      )
+      cleanupAnimations()
     }
   }
 }
 
-// Start the animation when the component is mounted
+const cleanupAnimations = async () => {
+  await new Promise<void>((resolve) => {
+    gsap.fromTo(
+      numberEls.value,
+      { y: 190 },
+      {
+        y: 0,
+        duration: 0.5,
+        ease: "power2.out",
+        stagger: 0.1,
+        onComplete: resolve,
+      }
+    )
+  })
+
+  gsap.to(labelsEls.value, {
+    y: -30,
+    duration: 0.5,
+    ease: "power2.in",
+    stagger: 0.1,
+    delay: 0,
+  })
+
+  await new Promise<void>((resolve) => {
+    gsap.to(numberEls.value, {
+      y: -190,
+      duration: 0.5,
+      ease: "power2.in",
+      stagger: 0.1,
+      onComplete: resolve,
+      delay: 0,
+    })
+  })
+
+  gsap.fromTo(
+    headingEls.value,
+    { y: 80, opacity: 0 },
+    {
+      y: "0",
+      opacity: 1,
+      duration: 0.5,
+      delay: 0.4,
+      ease: "power2.out",
+      stagger: 0.03,
+      onComplete: () => {
+        isLoaded.value = true
+      },
+    }
+  )
+
+  gsap.fromTo(
+    headingEls.value,
+    { y: 0 },
+    {
+      y: "-70vh",
+      duration: 1,
+      ease: "power1.in",
+      stagger: 0,
+      delay: 1.3,
+    }
+  )
+}
+
 onMounted(() => {
+  // Start the interval to increment digits
   timer.value = setInterval(() => {
     incrementDigits()
+
     if (number.value === 99) {
-      clearInterval(timer.value!)
+      clearInterval(timer.value)
     }
   }, 1200)
 })
@@ -162,52 +166,57 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="bg-black w-screen h-screen relative">
-    <div
-      class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-white text-[150px]"
-    >
-      <div class="relative">
+  <div ref="smoothScrollWrapper">
+    <div class="bg-black w-screen h-screen relative">
+      <div
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-y-hidden text-white text-[150px]"
+      >
+        <div class="relative">
+          <span
+            v-for="(digit, index) in number
+              .toString()
+              .padStart(2, '0')
+              .split('')"
+            :key="index"
+            :ref="el => numberEls[index] = el as HTMLElement"
+            class="inline-block mr-0 relative opacity-0 translate-y-[120px]"
+          >
+            {{ digit }}
+          </span>
+        </div>
+      </div>
+      <div
+        class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 text-white text-[150px]"
+      >
         <span
-          v-for="(digit, index) in number.toString().padStart(2, '0').split('')"
+          v-for="(letter, index) in 'Ottografie'.split('')"
           :key="index"
-          :ref="el => numberEls[index] = el as HTMLElement"
-          class="inline-block mr-0 relative opacity-0 translate-y-[120px]"
+          :ref="el => headingEls[index] = el as HTMLElement"
+          class="inline-block translate-y-[190px] opacity-0"
         >
-          {{ digit }}
+          {{ letter }}
         </span>
       </div>
-    </div>
-    <div
-      class="absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 text-white text-[150px]"
-    >
-      <span
-        v-for="(letter, index) in 'Ottografie'.split('')"
-        :key="index"
-        :ref="el => headingEls[index] = el as HTMLElement"
-        class="inline-block translate-y-[190px] opacity-0"
+      <div
+        class="absolute top-1/2 flex w-full justify-between items-center overflow-hidden uppercase text-white text-xl px-[6vw]"
       >
-        {{ letter }}
-      </span>
-    </div>
-    <div
-      class="absolute top-1/2 flex w-full justify-between items-center overflow-hidden uppercase text-white text-xl px-[6vw]"
-    >
-      <span
-        v-for="(label, index) in [
-          'Campaigns',
-          'Editorial',
-          'Celebrities',
-          'Beauty',
-        ]"
-        :key="index"
-        :ref="el => labelsEls[index] = el as HTMLElement"
-        class="opacity-100 translate-[30px] w-[150px]"
-      >
-        {{ label }}
-      </span>
-    </div>
-    <div v-if="isLoaded">
-      <slides />
+        <span
+          v-for="(label, index) in [
+            'Campaigns',
+            'Editorial',
+            'Celebrities',
+            'Beauty',
+          ]"
+          :key="index"
+          :ref="el => labelsEls[index] = el as HTMLElement"
+          class="opacity-100 translate-[30px] w-[150px]"
+        >
+          {{ label }}
+        </span>
+      </div>
+      <div v-if="isLoaded">
+        <slides />
+      </div>
     </div>
   </div>
 </template>
